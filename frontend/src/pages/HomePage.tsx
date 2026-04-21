@@ -4,11 +4,23 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SegmentationOverlay from "../components/SegmentationOverlay";
 
-export default function HomePage() {
-  const [icebergs, setIcebergs] = useState([]);
-  const [selectedIceberg, setSelectedIceberg] = useState(null);
-  const [file, setFile] = useState(null);
-  const [notification, setNotification] = useState(null);
+type Iceberg = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  image_path?: string;
+  mask_path?: string;
+  status?: string;
+  area?: number;
+};
+
+export function HomePage() {
+  const [icebergs, setIcebergs] = useState<Iceberg[]>([]);
+  const [selectedIceberg, setSelectedIceberg] = useState<Iceberg | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +55,7 @@ export default function HomePage() {
         "http://localhost:5000/upload-image",
         formData
       );
+
       setIcebergs((prev) => [...prev, res.data]);
       setFile(null);
     } catch (err) {
@@ -52,13 +65,15 @@ export default function HomePage() {
 
   // Listen for mask generation notifications via broadcast
   useEffect(() => {
-    const handleNotification = (event) => {
+    const handleNotification = () => {
       setNotification("✅ Mask has been generated and saved!");
       setTimeout(() => setNotification(null), 5000);
     };
 
     window.addEventListener("maskReady", handleNotification);
-    return () => window.removeEventListener("maskReady", handleNotification);
+
+    return () =>
+      window.removeEventListener("maskReady", handleNotification);
   }, []);
 
   return (
@@ -78,7 +93,7 @@ export default function HomePage() {
             borderRadius: 8,
             boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
             fontSize: 14,
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
           {notification}
@@ -94,13 +109,13 @@ export default function HomePage() {
           left: 20,
           background: "rgba(0,0,0,0.6)",
           padding: "10px 12px",
-          borderRadius: 8
+          borderRadius: 8,
         }}
       >
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           style={{ color: "white" }}
         />
         <button onClick={uploadImage} style={{ marginLeft: 8 }}>
@@ -120,7 +135,7 @@ export default function HomePage() {
         pointColor={() => "red"}
         width={window.innerWidth}
         height={window.innerHeight}
-        onPointClick={(d) => setSelectedIceberg(d)}
+        onPointClick={(d) => setSelectedIceberg(d as Iceberg)}
       />
 
       {selectedIceberg && (
@@ -134,10 +149,9 @@ export default function HomePage() {
             padding: "16px 12px 12px",
             borderRadius: 8,
             zIndex: 10,
-            boxShadow: "0 0 10px rgba(0,0,0,0.3)"
+            boxShadow: "0 0 10px rgba(0,0,0,0.3)",
           }}
         >
-          {/* ❌ CLOSE (X) BUTTON — INSERTED HERE */}
           <button
             onClick={() => setSelectedIceberg(null)}
             style={{
@@ -149,7 +163,7 @@ export default function HomePage() {
               fontSize: 20,
               fontWeight: "bold",
               cursor: "pointer",
-              color: "#555"
+              color: "#555",
             }}
             aria-label="Close"
           >

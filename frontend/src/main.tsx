@@ -9,17 +9,26 @@ import { Signup } from "./pages/Signup";
 import { UploadPage } from "./pages/UploadPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { ErrorPage } from "./pages/ErrorPage";
+import { Navigate } from "react-router-dom";
 
 import "./index.css";
 
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+  {
     path: "/",
-    element: <HomePage />, // main layout
+    element: <HomePage />,
     errorElement: <ErrorPage />,
     children: [
       {
-        index: true, // default route "/"
+        index: true,
         element: <UploadPage />,
       },
       {
@@ -29,12 +38,8 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
+    path: "*",
+    element: <Navigate to="/login" />,
   },
 ]);
 
