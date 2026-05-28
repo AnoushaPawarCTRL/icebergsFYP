@@ -1,19 +1,17 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import logo from "../assets/logo.png"; // adjust path if needed
 
 export default function Navbar() {
   return (
     <nav className="navbar">
-      {/* Brand / Home */}
       <Link to="/" className="nav-brand">
-        🧊 Iceberg Tracker
+        <img src={logo} alt="CryoAI Logo" className="nav-logo" />
       </Link>
 
-      {/* Navigation */}
       <div className="nav-links">
-        <Link to="/history/1">Iceberg History</Link>
+        <Link to="/history/1">Login</Link>
       </div>
     </nav>
   );
 }
-

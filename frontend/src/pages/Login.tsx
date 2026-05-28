@@ -1,113 +1,140 @@
-import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../api/auth.ts";
-import { SubmitHandler, useForm } from "react-hook-form";
-import styles from "./login.module.css";
-import { useState } from "react";
-import { Loading } from "../components/loading/Loading.tsx";
-import iceberg from "../assets/iceberg.png";
+import React, { useState } from "react";
+import "./Login.css";
 
-interface FormInput {
-  email: string;
-  password: string;
+interface LoginProps {
+  onBack: () => void;
+  onLoginSuccess?: (email: string) => void;
 }
 
-export function Login() {
-  const navigate = useNavigate();
+const Login: React.FC<LoginProps> = ({ onBack, onLoginSuccess }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormInput>();
-
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [backendError, setBackendError] = useState<string>("");
-
-  const submitLogin: SubmitHandler<FormInput> = async (data) => {
-    setSubmitting(true);
-    setBackendError("");
-    try {
-      await loginUser(data.email, data.password);
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      setBackendError("Invalid email or password");
-      setSubmitting(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
     }
+    setLoading(true);
+    // TODO: replace with real auth call
+    await new Promise((res) => setTimeout(res, 800));
+    setLoading(false);
+    onLoginSuccess?.(email);
   };
 
-  if (submitting) {
-    return <Loading />;
-  }
-
   return (
-    <main className={styles.container}>
+    <div className="login-root">
+      <div className="login-bg-grid" aria-hidden="true" />
+      <div className="login-bg-glow" aria-hidden="true" />
 
-      {/* Iceberg image with bobbing animation */}
-      <div className={styles.icebergWrapper}>
-        <img src={iceberg} alt="CryoAI iceberg" />
-      </div>
+      {/* Nav */}
+      <nav className="login-nav">
+        <button className="login-logo-btn" onClick={onBack} aria-label="Back to home">
+          <img src="/src/assets/logo.png" alt="CryoAI" className="logo-img" />
+        </button>
+      </nav>
 
-      {/* CryoAI logo overlaid on iceberg */}
-      <span className={styles.logo}>CryoAI</span>
-
-      {/* Animated water wave at sea level */}
-      <div className={styles.waveContainer}>
-        <svg
-          className={styles.wave}
-          viewBox="0 0 1440 40"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,20 C180,35 360,5 540,20 C720,35 900,5 1080,20 C1260,35 1440,5 1440,20 L1440,40 L0,40 Z"
-            fill="#0d3a5c"
-          />
-        </svg>
-      </div>
-
-      {/* Login form */}
-      <section className={styles.formSection}>
-        <form onSubmit={handleSubmit(submitLogin)} className={styles.form}>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Email"
-            {...register("email", { required: true })}
-          />
-
-          <input
-            className={styles.input}
-            type="password"
-            placeholder="Password"
-            {...register("password", { required: true })}
-          />
-
-          <button type="submit" className={styles.loginBtn}>
-            {submitting ? "Logging in..." : "Login"}
-          </button>
-
-          <div className={styles.signupLink}>
-            <Link to="/signup">Don't have an account? Sign up</Link>
+      {/* Card */}
+      <main className="login-main">
+        <div className="login-card">
+          <div className="login-card-header">
+            <h1 className="login-title">Welcome back</h1>
+            <p className="login-subtitle">Sign in to your CryoAI account</p>
           </div>
 
-          <button type="button" className={styles.guestBtn}>
-            Try guest account
-          </button>
+          <form className="login-form" onSubmit={handleSubmit} noValidate>
+            <div className="field-group">
+              <label className="field-label" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="field-input"
+                placeholder="you@organisation.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
 
-          <section className={styles.errors}>
-            {errors.email && (
-              <span className={styles.error}>Please provide your email</span>
+            <div className="field-group">
+              <label className="field-label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="field-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+              <a href="#" className="forgot-link">
+                Forgot password?
+              </a>
+            </div>
+
+            {error && (
+              <p className="login-error" role="alert">
+                {error}
+              </p>
             )}
-            {errors.password && (
-              <span className={styles.error}>Please provide your password</span>
-            )}
-            {backendError && (
-              <span className={styles.error}>{backendError}</span>
-            )}
-          </section>
-        </form>
-      </section>
-    </main>
+
+            <button
+              type="submit"
+              className={`btn-login-submit ${loading ? "loading" : ""}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="spinner" aria-label="Signing in…" />
+              ) : (
+                "SIGN IN"
+              )}
+            </button>
+          </form>
+
+          <div className="login-card-footer">
+            <span>Don't have an account?</span>
+            <a href="#" className="register-link">
+              Create one free
+            </a>
+          </div>
+        </div>
+
+        {/* Decorative iceberg shard */}
+        <div className="login-deco" aria-hidden="true">
+          <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+            <polygon
+              points="100,0 180,80 160,180 100,240 40,180 20,80"
+              fill="url(#shardGrad)"
+              opacity="0.18"
+            />
+            <polygon
+              points="100,20 165,85 148,170 100,220 52,170 35,85"
+              fill="url(#shardGrad2)"
+              opacity="0.12"
+            />
+            <defs>
+              <linearGradient id="shardGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#b8eefb" />
+                <stop offset="100%" stopColor="#4aa8d0" />
+              </linearGradient>
+              <linearGradient id="shardGrad2" x1="1" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#e8f6fc" />
+                <stop offset="100%" stopColor="#3a8ab0" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </main>
+    </div>
   );
-}
+};
+
+export default Login;

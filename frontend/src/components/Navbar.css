@@ -1,37 +1,97 @@
+/* ============================================================
+   Navbar — CryoAI
+   ============================================================ */
+
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 80px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(6px);
-  z-index: 20;
+
+  padding: 0 32px;
+
+  background: rgba(3, 13, 28, 0.85);
+  backdrop-filter: blur(8px);
+
+  border-bottom: 1px solid rgba(91, 200, 232, 0.2);
+
+  z-index: 100;
 }
 
+/* ---------- Logo ---------- */
 .nav-brand {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: white;
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  letter-spacing: 0.5px;
 }
 
-.nav-brand:hover {
+/* 🔥 THIS controls your logo size */
+.nav-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-logo:hover {
   opacity: 0.85;
+  transform: scale(1.05);
+}
+
+/* ---------- Links ---------- */
+.nav-links {
+  display: flex;
+  align-items: center;
 }
 
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 1rem;
-  margin-left: 20px;
+  font-size: 0.95rem;
+  margin-left: 24px;
+  letter-spacing: 0.05em;
+
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 1px;
+  background: #5bc8e8;
+  transition: width 0.2s ease;
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  color: #5bc8e8;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .nav-logo {
+    height: 36px;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    margin-left: 16px;
+  }
 }

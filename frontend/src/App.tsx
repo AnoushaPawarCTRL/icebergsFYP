@@ -1,20 +1,34 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { Login } from "./pages/Login.tsx";
-import { Signup } from "./pages/Signup.tsx";
+import React, { useState } from "react";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
 
-// export default function App() {
-//   return (
-//     <Routes>
-//       <Route path="/" element={<Navigate to="/login" />} />
+type View = "landing" | "login";
 
-//       <Route path="/login" element={<Login />} />
-//       <Route path="/signup" element={<Signup />} />
+const App: React.FC = () => {
+  const [view, setView] = useState<View>("landing");
 
-//       <Route path="*" element={<div>Page not found</div>} />
-//     </Routes>
-//   );
+  if (view === "login") {
+    return (
+      <Login
+        onBack={() => setView("landing")}
+        onLoginSuccess={(email) => {
+          // TODO: handle post-login routing
+          console.log("Logged in as:", email);
+        }}
+      />
+    );
+  }
 
-export default function App() {
-  return <Login />;
-}
+  return (
+    <LandingPage
+      onLogin={() => setView("login")}
+      onCreateAccount={() => setView("login")}
+      onGuestAccount={() => {
+        // TODO: handle guest session
+        console.log("Guest account clicked");
+      }}
+    />
+  );
+};
 
+export default App;
